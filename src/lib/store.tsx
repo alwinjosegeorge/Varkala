@@ -13,12 +13,12 @@ import type {
 const STORAGE_KEY = "error404_trip_v2";
 
 const DEFAULT_MEMBERS: Member[] = [
-  { id: "alwin",     name: "Alwin",     emoji: "🌊", color: "#38BDF8" },
-  { id: "joe",       name: "Joe",       emoji: "🔥", color: "#F97316" },
-  { id: "alex",      name: "Alex",      emoji: "⚡", color: "#D6FF3F" },
-  { id: "joshwin",   name: "Joshwin",   emoji: "🌅", color: "#F472B6" },
-  { id: "febin",     name: "Febin",     emoji: "🌴", color: "#34D399" },
-  { id: "christwin", name: "Christwin", emoji: "🌙", color: "#A78BFA" },
+  { id: "alwin",     name: "Alwin",     emoji: "🌊", color: "#38BDF8", avatarUrl: "/alwin.png" },
+  { id: "joe",       name: "Joe",       emoji: "🔥", color: "#F97316", avatarUrl: "/Joe.png" },
+  { id: "alex",      name: "Alex",      emoji: "⚡", color: "#D6FF3F", avatarUrl: "/alex.png" },
+  { id: "joshwin",   name: "Joshwin",   emoji: "🌅", color: "#F472B6", avatarUrl: "/joswin.png" },
+  { id: "febin",     name: "Febin",     emoji: "🌴", color: "#34D399", avatarUrl: "/febin.png" },
+  { id: "christwin", name: "Christwin", emoji: "🌙", color: "#A78BFA", avatarUrl: "/Chirstwin.png" },
 ];
 
 const DEFAULT_LOCATIONS: TripLocation[] = [
@@ -70,8 +70,8 @@ const INITIAL_TRIP_GOA: Trip = {
   endDate: "2026-11-15",
   themeColor: "#38BDF8",
   members: [
-    { id: "alwin",     name: "Alwin",     emoji: "🌊", color: "#38BDF8" },
-    { id: "joe",       name: "Joe",       emoji: "🔥", color: "#F97316" },
+    { id: "alwin",     name: "Alwin",     emoji: "🌊", color: "#38BDF8", avatarUrl: "/alwin.png" },
+    { id: "joe",       name: "Joe",       emoji: "🔥", color: "#F97316", avatarUrl: "/Joe.png" },
   ],
   expenses: [],
   borrowings: [],

@@ -7,7 +7,7 @@ export function MemberAvatar({
 }: { member: Member; size?: number; ring?: boolean }) {
   return (
     <div
-      className={`grid place-items-center rounded-full shrink-0 font-bold text-secondary ${
+      className={`relative grid place-items-center rounded-full shrink-0 font-bold text-secondary overflow-hidden ${
         ring ? "ring-2 ring-white shadow-soft" : ""
       }`}
       style={{
@@ -18,7 +18,15 @@ export function MemberAvatar({
       }}
       aria-label={member.name}
     >
-      <span>{member.emoji}</span>
+      {member.avatarUrl ? (
+        <img
+          src={member.avatarUrl}
+          alt={member.name}
+          className="h-full w-full object-cover rounded-full"
+        />
+      ) : (
+        <span>{member.emoji}</span>
+      )}
     </div>
   );
 }

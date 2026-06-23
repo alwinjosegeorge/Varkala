@@ -40,6 +40,7 @@ export interface Member {
   name: string;
   emoji: string;
   color: string;
+  avatarUrl?: string;
 }
 
 export interface Borrowing {
