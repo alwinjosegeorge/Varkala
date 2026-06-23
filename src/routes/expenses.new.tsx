@@ -7,6 +7,7 @@ import { MemberAvatar } from "../components/Avatar";
 import { fmtINR, useStore } from "../lib/store";
 import type { SplitMode, Attachment, CategoryItem } from "../lib/types";
 import { computeSplits } from "../lib/settlement";
+import { toast } from "sonner";
 
 export const Route = createFileRoute("/expenses/new")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -165,7 +166,31 @@ function NewExpense() {
   };
 
   function submit() {
-    if (!canSubmit) return;
+    if (name.trim().length === 0) {
+      toast.error("Please enter what the expense was for!");
+      return;
+    }
+    if (amt <= 0) {
+      toast.error("Please enter a valid amount!");
+      return;
+    }
+    if (!category) {
+      toast.error("Please select a category!");
+      return;
+    }
+    if (selected.length === 0) {
+      toast.error("Please select at least one member to split with!");
+      return;
+    }
+    if (splitMode === "custom" && Math.abs(totalCustom - amt) > 0.5) {
+      toast.error(`Custom split total (${fmtINR(totalCustom)}) must match amount (${fmtINR(amt)})`);
+      return;
+    }
+    if (splitMode === "percentage" && Math.abs(totalCustom - 100) > 0.5) {
+      toast.error(`Percentage split total (${totalCustom}%) must equal 100%`);
+      return;
+    }
+
     const splits = computeSplits(splitMode, amt, selected, customMap);
 
     const expenseData = {
@@ -525,16 +550,15 @@ function NewExpense() {
       </div>
 
       {/* Submit */}
-      <div className="fixed bottom-24 inset-x-0 z-30 px-4">
+      <div className="fixed bottom-24 inset-x-0 z-50 px-4">
         <div className="mx-auto max-w-md">
           <motion.button
             whileTap={{ scale: 0.97 }}
             onClick={submit}
-            disabled={!canSubmit}
             className={`w-full rounded-3xl py-4 text-base font-black uppercase tracking-wider transition-all ${
               canSubmit
                 ? "bg-secondary text-primary shadow-glow-lime"
-                : "bg-muted text-muted-foreground"
+                : "bg-muted/70 text-muted-foreground/60 border border-border"
             }`}
           >
             {existingExpense ? "Save Changes" : `Add ${amt > 0 ? fmtINR(amt) : "Expense"}`}
