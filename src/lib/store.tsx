@@ -10,7 +10,7 @@ import type {
   Trip,
 } from "./types";
 
-const STORAGE_KEY = "error404_trip_v2";
+const STORAGE_KEY = "error404_trip_varkala_v1";
 
 const DEFAULT_MEMBERS: Member[] = [
   { id: "alwin",     name: "Alwin",     emoji: "🌊", color: "#38BDF8", avatarUrl: "/alwin.png" },
@@ -22,13 +22,30 @@ const DEFAULT_MEMBERS: Member[] = [
 ];
 
 const DEFAULT_LOCATIONS: TripLocation[] = [
-  { id: "blacksand", name: "Black Sand Beach", description: "Volcanic sands of Papanasam", visited: true, emoji: "🏖️" },
-  { id: "mangrove",  name: "Mangrove Forest",  description: "Backwater paddle through green canopies", visited: true, emoji: "🌿" },
-  { id: "kayaks",    name: "Zebra Kayaks",     description: "Sunset kayaking across the lagoon",        visited: false, emoji: "🛶" },
-  { id: "northcliff",name: "North Cliff",      description: "Cafés on the laterite cliff edge",         visited: true, emoji: "🌅" },
-  { id: "southcliff",name: "South Cliff",      description: "Quiet ocean views and steps to the sea",   visited: false, emoji: "🌄" },
-  { id: "kappil",    name: "Kappil Beach",     description: "Where backwaters meet the Arabian Sea",    visited: false, emoji: "🌊" },
-  { id: "shang",     name: "Shangumugham",     description: "Mermaid sculpture and sunset boulevards",  visited: false, emoji: "🧜" },
+  { id: "home_start", name: "Home", description: "Trip starts from home", visited: false, emoji: "🏠" },
+  { id: "pala_bus_start", name: "Pala Bus Stand", description: "Boarding bus to railway station", visited: false, emoji: "🚌" },
+  { id: "kottayam_rail_start", name: "Kottayam Railway Station", description: "Arrived at Kottayam station", visited: false, emoji: "🚉" },
+  { id: "malabar_express", name: "Malabar Express", description: "Boarding train to Varkala", visited: false, emoji: "🚆" },
+  { id: "varkala_rail", name: "Varkala Sivagiri Railway Station", description: "Welcome to Varkala", visited: false, emoji: "🚉" },
+  { id: "scooter_pickup", name: "Scooter Rental Pickup", description: "Getting scooters for local transit", visited: false, emoji: "🛵" },
+  { id: "blacksand", name: "Black Sand Beach", description: "Volcanic sands of Papanasam", visited: false, emoji: "🌊" },
+  { id: "mangrove", name: "Mangrove Forest", description: "Backwater paddle through green canopies", visited: false, emoji: "🌿" },
+  { id: "kayaks", name: "Zebra Kayaks", description: "Sunset kayaking across the lagoon", visited: false, emoji: "🚣" },
+  { id: "northcliff", name: "North Cliff", description: "Cafés on the laterite cliff edge", visited: false, emoji: "🏖️" },
+  { id: "southcliff", name: "South Cliff", description: "Quiet ocean views and steps to the sea", visited: false, emoji: "🏖️" },
+  { id: "kappil", name: "Kappil Beach", description: "Where backwaters meet the Arabian Sea", visited: false, emoji: "🌅" },
+  { id: "northcliff_night", name: "North Cliff Night Life", description: "Exploring cliffs at night", visited: false, emoji: "🌃" },
+  { id: "tvm_ride", name: "Midnight TVM Ride", description: "Late night ride to Trivandrum", visited: false, emoji: "🏍️" },
+  { id: "kowdiar", name: "Kowdiar", description: "Royal palace sights", visited: false, emoji: "📍" },
+  { id: "palayam", name: "Palayam", description: "Heart of TVM city", visited: false, emoji: "📍" },
+  { id: "statue", name: "Statue", description: "TVM Secretariat area", visited: false, emoji: "📍" },
+  { id: "shang", name: "Shangumugham", description: "Mermaid sculpture and sunset boulevards", visited: false, emoji: "🌊" },
+  { id: "return_varkala", name: "Return To Varkala", description: "Riding back to Varkala base", visited: false, emoji: "🏍️" },
+  { id: "scooter_return", name: "Scooter Return", description: "Returning rental scooters", visited: false, emoji: "🛵" },
+  { id: "venad_express", name: "Venad Express", description: "Boarding train back to Kottayam", visited: false, emoji: "🚆" },
+  { id: "kottayam_rail_end", name: "Kottayam Railway Station", description: "Arrived back at Kottayam", visited: false, emoji: "🚉" },
+  { id: "pala_bus_end", name: "Pala Bus Stand", description: "Bus back to Pala", visited: false, emoji: "🚌" },
+  { id: "home_end", name: "Home", description: "Back home safely", visited: false, emoji: "🏠" },
 ];
 
 export const DEFAULT_CATEGORIES: CategoryItem[] = [
@@ -151,8 +168,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         const res = await fetch("/api/sync");
         const data = await res.json();
         if (data.success && data.state) {
-          setGeneralStateRaw(data.state);
-          setSyncStatus("synced");
+          const hasNewItinerary = data.state.trips?.some((t: any) => 
+            t.locations?.some((l: any) => l.id === "home_start")
+          );
+          if (hasNewItinerary) {
+            setGeneralStateRaw(data.state);
+            setSyncStatus("synced");
+          } else {
+            console.log("Database has old itinerary, overwriting with clean Varkala trip...");
+            setSyncStatus("syncing");
+            await fetch("/api/sync", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(generalState),
+            });
+            setSyncStatus("synced");
+          }
         } else {
           setSyncStatus("offline");
         }
